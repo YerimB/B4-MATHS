@@ -1,0 +1,86 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## hotline
+##
+
+import sys
+from math import *
+from time import time
+import matplotlib.pyplot as plt
+
+
+def coefBinomialSpecialInt(n, k):
+    return (factorial(n) // (factorial(k) * factorial(n - k)))
+
+
+def coefBinomial(n, k):
+    return (factorial(n) / (factorial(k) * factorial(n - k)))
+
+
+def binomial(n, k):
+    ret = 0
+    idx = 0
+    while (k + idx <= n):
+        ret += coefBinomial(n, k + idx) * (pow(1/6, k + idx)) * pow(5/6, n - (k + idx)) * 100
+        idx += 1
+    return (ret)
+
+binomialProba = [0 for x in range(51)]
+poissonProba = [0 for x in range(51)]
+
+def binomialDistribution(p):
+    print("Binomial distribution:")
+    over = 0;
+    duration = time()
+    for k in range(51):
+        binomialProba[k] = coefBinomial(3500, k) * pow(p, k) * pow(1 - p, 3500 - k)
+        print("%d -> %.3f" % (k, binomialProba[k]), end=('\n' if (k % 5 == 4 or k == 50) else '\t'))
+        if (k <= 25): over += binomialProba[k]
+    print("Overload: %.1f%%" % ((1.0 - over) * 100))
+    print("Computation time: %.2f ms" % ((duration - time()) * (-1000)), end='\n\n')
+
+
+def poissonDistribution(p):
+    print("Poisson distribution:")
+    over = 0; l = (3500 * p)
+    duration = time()
+    for k in range(51):
+        poissonProba[k] = ((l**k * exp(-l)) / factorial(k))
+        print("%d -> %.3f" % (k, poissonProba[k]), end=('\n' if (k % 5 == 4 or k == 50) else '\t'))
+        if (k <= 25): over += poissonProba[k]
+    print("Overload: %.1f%%" % ((1.0 - over) * 100))
+    print("Computation time: %.2f ms" % ((duration - time()) * (-1000)))
+
+
+def hotline():
+    try:
+        if (len(sys.argv) == 2):
+            p = (int(sys.argv[1]) / 3600) * (3500 / 8) / 3500
+            binomialDistribution(p)
+            poissonDistribution(p)
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16,9))
+            ax1.plot(binomialProba, color="red", linewidth=1, marker="o", markerfacecolor="blue", markersize=6)
+            ax2.plot(poissonProba, color="green", linewidth=1, marker="o", markerfacecolor="blue", markersize=6)
+
+            ax1.set_title("Binomial distribution")
+            ax1.set_ylabel("Probability")
+            ax1.set_xlabel("Simultaneous calls")
+            ax2.set_title("Poisson distribution")
+            ax2.set_ylabel("Probability")
+            ax2.set_xlabel("Simultaneous calls")
+
+            plt.show()
+        elif (len(sys.argv) == 3):
+            print("%d-combination of a %d set:\n%ld" % (int(sys.argv[2]), \
+                int(sys.argv[1]), coefBinomialSpecialInt(int(sys.argv[1]), int(sys.argv[2]))))
+        else:
+            exit(84)
+    except:
+        exit(84)
+
+
+hotline()

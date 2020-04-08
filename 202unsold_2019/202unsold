@@ -1,0 +1,101 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## unsold
+##
+
+import sys
+from array import *
+
+def givenFormula(a, b, x, y):
+    return (((a - x) * (b - y)) / ((5 * a - 150) * (5 * b - 150)))
+
+
+def printLine(a, b, y, matrix):
+    for x in range(10, 51, 10):
+        matrix[int((y / 10) - 1)][int((x / 10) - 1)] = givenFormula(a, b, x, y)
+        print("%.3f" % (matrix[int((y / 10) - 1)][int((x / 10) - 1)]), end='\t')
+        matrix[int((y / 10) - 1)][5] += matrix[int((y / 10) - 1)][int((x / 10) - 1)]
+        matrix[5][int((x / 10) - 1)] += matrix[int((y / 10) - 1)][int((x / 10) - 1)]
+    print("%.3f" % matrix[int((y / 10) - 1)][5])
+    return (matrix[int((y / 10) - 1)][5])
+
+
+def trousersAndJacket(a, b, matrix):
+    print("--------------------------------------------------------------------------------", end='\n\t')
+    for i in range(10, 51, 10):
+        print("X=" + str(i), end='\t')
+    print("Y law")
+    for y in range(10, 51, 10):
+        print("Y=" + str(y) + "\t", end='')
+        matrix[5][5] += printLine(a, b, y, matrix)
+    print("X law", end='\t')
+    for i in range(5):
+        print("%.3f" % matrix[5][i], end='\t')
+    print("%.3f" % matrix[5][5])
+    print("--------------------------------------------------------------------------------")
+
+
+def suit(matrix):
+    zLaws = [0 for n in range(9)]
+
+    print("z", end='\t')
+    for z in range(20, 101, 10):
+        for x in range(10, 51, 10):
+            for y in range(10, 51, 10):
+                if ((x + y) == z): zLaws[int((z / 10) - 2)] += matrix[int((y / 10) - 1)][int((x / 10) - 1)]
+        print(z, end='')
+        if (z != 100): print("\t", end='')
+        else: print("\np(Z=z)", end='\t')
+    for i in range(9):
+        print("%.3f" % zLaws[i], end='')
+        if (i < 8): print("\t", end='')
+    print("\n--------------------------------------------------------------------------------")
+    return (zLaws)
+
+
+def expValAndVariance(matrix, zLaws):
+    xE = 0; yE = 0; zE = 0
+    xV = 0; yV = 0; zV = 0
+    # E(X) and E(Y)
+    for xy in range(10, 51, 10):
+        xE += (xy * matrix[5][int((xy / 10) - 1)])
+        yE += (xy * matrix[int((xy / 10) - 1)][5])
+    for z in range(20, 101, 10):
+        zE += (z * zLaws[int((z / 10) - 2)])
+    # V(X) and V(Y)
+    for xy in range(10, 51, 10):
+        xV += pow((xy - xE), 2) * matrix[5][int((xy / 10) - 1)]
+        yV += pow((xy - yE), 2) * matrix[int((xy / 10) - 1)][5]
+    for z in range(20, 101, 10):
+        zV += pow((z - zE), 2) * zLaws[int((z / 10) - 2)]
+    print("expected value of X:\t%.1f" % xE)
+    print("variance of X:\t\t%.1f" % xV)
+    print("expected value of Y:\t%.1f" % yE)
+    print("variance of Y:\t\t%.1f" % yV)
+    print("expected value of Z:\t%.1f" % zE)
+    print("variance of Z:\t\t%.1f" % zV)
+    print("--------------------------------------------------------------------------------")
+
+
+def unsold():
+    try:
+        if (len(sys.argv) != 3):
+            exit(84)
+        a = int(sys.argv[1])
+        b = int(sys.argv[2])
+        matrix = [[0 for x in range(6)] for y in range(6)]
+
+        if (a < 50 or b < 50):
+            exit(84)
+        trousersAndJacket(a, b, matrix)
+        zLaws = suit(matrix)
+        expValAndVariance(matrix, zLaws)
+    except:
+        exit(84)
+
+
+unsold()

@@ -1,0 +1,114 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## yams
+##
+
+import re
+import sys
+from math import *
+
+def fact(num):
+    if (num == 0):
+        return 1
+    return (num * fact(num - 1))
+
+
+def coefBinomial(n, k):
+    return (fact(n) / (fact(k) * fact(n - k)))
+
+
+def binomial(n, k):
+    ret = 0
+    idx = 0
+    while (k + idx <= n):
+        ret += coefBinomial(n, k + idx) * (pow(1/6, k + idx)) * pow(5/6, n - (k + idx)) * 100
+        idx += 1
+    return (ret)
+
+
+def chances(dice, form, nb):
+    gud = 0
+    for die in dice:
+        if (die == nb): gud += 1
+    n = 5 - gud
+    if (form == "yams"): # Yams
+        prob = (pow(1/6, 5 - gud)) * 100
+    elif (form == "four"): # Four of a kind
+        k = 4 - gud
+        if (k < 0): k = 0
+        prob = binomial(n, k)
+        print("Chances to get a " + nb + " four-of-a-kind: %.2f" % prob + '%')
+        return
+    elif (form == "three"): # three of a kind
+        k = 3 - gud
+        if (k < 0): k = 0
+        prob = binomial(n, k)
+        print("Chances to get a " + nb + " three-of-a-kind: %.2f" % prob + '%')
+        return
+    elif (form == "pair"): # pair
+        k = 2 - gud
+        if (k < 0): k = 0
+        prob = binomial(n, k)
+    print("Chances to get a " + nb, form + ": %.2f" % prob + '%')
+
+
+def fullChances(dice, triNb, diNb):
+    if (triNb == diNb):
+        exit(84)
+    if (dice.count(triNb) > 3): brel = 3
+    else: brel = dice.count(triNb)
+    if (dice.count(diNb) > 2): pair = 2
+    else: pair = dice.count(diNb)
+    n = 5 - brel - pair
+    prob = coefBinomial(n, (3 - brel)) * pow(1/6, n) * 100
+    print("Chances to get a " + triNb + " full of " + diNb + ": %.2f" % prob + '%')
+
+
+def straightChances(dice, up):
+    repeat = 0
+    down = up - 4
+    for i in range(down, up + 1):
+        if (dice.count(chr(i + 48)) > 0):
+            repeat += dice.count(chr(i + 48)) - 1
+    if (up == 6):
+        repeat += dice.count('1')
+    else:
+        repeat += dice.count('6')
+    repeat += dice.count('0')
+    prob = factorial(repeat) / pow(6, repeat) * 100
+    print("Chances to get a " + str(up) + (" straight: %.2f" % prob) + '%')
+
+
+def yams():
+    try:
+        if (len(sys.argv) > 7):
+            exit(84)
+        dice = sys.argv[1:6]
+        form = sys.argv[6]
+        for elem in dice:
+            if (int(elem) < 0 or int(elem) > 6):
+                exit(84)
+
+        if (re.search("yams_[1-6]", form) and len(form) == 6):
+            chances(dice, "yams", form[5])
+        elif (re.search("four_[1-6]", form) and len(form) == 6):
+            chances(dice, "four", form[5])
+        elif (re.search("three_[1-6]", form) and len(form) == 7):
+            chances(dice, "three", form[6])
+        elif (re.search("pair_[1-6]", form) and len(form) == 6):
+            chances(dice, "pair", form[5])
+        elif (re.search("full_[1-6]_[1-6]", form) and len(form) == 8):
+            fullChances(dice, form[5], form[7])
+        elif (re.search("straight_[5-6]", form) and len(form) == 10):
+            straightChances(dice, int(form[9]))
+        else:
+            exit(84)
+    except:
+        exit(84)
+
+
+yams()

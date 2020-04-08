@@ -1,0 +1,70 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## ducks
+##
+
+import sys
+from math import *
+
+def f(t):
+    global a
+    return (a * exp(-t) + (4.0 - 3.0 * a) * exp(-2.0 * t) + (2.0 * a - 4.0) * exp(-4.0 * t))
+
+
+def fp(t):
+    global a
+    return (-a * exp(-t) - (4.0 - 3.0 * a) / 2.0 * exp(-2.0 * t) - (2.0 * a - 4.0) / 4.0 * exp(-4.0 * t))
+
+
+def averageReturnTime():
+    avg = 0.0 ; t = 0.0
+    while (t < 10):
+        avg += f(t) * t / 1000
+        t += 0.001
+    avg *= 60
+    return (ceil(avg))
+
+
+def stdDeviation():
+    res = 0.0 ; t = 0.0 ; average = (averageReturnTime() / 60)
+    print(average)
+    while (t < 100):
+        res += ((t - average) ** 2) * f(t) / 1000
+        t += 0.001
+    res = sqrt(res)
+    return (res)
+
+
+def percentAfter_T_Time(minutes):
+    return ((fp(minutes) - fp(0)) * 100)
+
+
+def timeAfter_P_Percent(percent):
+    t = 0.0
+    while t < 10000:
+        if (fp(t / 60.0) - fp(0) >= percent):
+            break
+        t += 0.01
+    return t
+
+
+def ducks():
+    print("Average return time: %dm %02ds" % divmod(averageReturnTime(), 60))
+    print("Standard deviation: %.3f" % stdDeviation())
+    print("Time after which 50%% of the ducks are back: %dm %02ds" % divmod(timeAfter_P_Percent(0.50), 60))
+    print("Time after which 99%% of the ducks are back: %dm %02ds" % divmod(timeAfter_P_Percent(0.99), 60))
+    print("Percentage of ducks back after 1 minute: %.1f%%" % percentAfter_T_Time(1))
+    print("Percentage of ducks back after 2 minutes: %.1f%%" % percentAfter_T_Time(2))
+
+
+try:
+    a = float(sys.argv[1])
+    if ((len(sys.argv) != 2) or not (0 <= a <= 2.5)):
+        exit(84)
+    ducks()
+except:
+    exit(84)
