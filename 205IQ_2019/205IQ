@@ -1,0 +1,71 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## IQ
+##
+
+import sys
+import math
+
+u = 0 ; s = 0 ; IQ1 = 0 ; IQ2 = 0 # Potentials arguments
+
+def help():
+    print("USAGE")
+    print("\t./205IQ u s [IQ1] [IQ2]", end='\n\n')
+    print("DESCRIPTION", end='\n\t')
+    print("u\tmean", end='\n\t')
+    print("s\tstandard deviation", end='\n\t')
+    print("IQ1\tminimum IQ", end='\n\t')
+    print("IQ2\tmaximum IQ")
+
+
+def f(x):
+    global u, s
+    return ((1 / (s * math.sqrt(2 * math.pi))) * math.exp((-1) * ((x - u) ** 2) / (2 * (s ** 2))))
+
+
+def plotDensity():
+    for x in range(0, 201):
+        print("%d %.5f" % (x, f(x)))
+
+
+def inferiorPercentage():
+    global IQ1
+    if (IQ1 < 0):
+        raise Exception
+    result = 0.0 ; x = 0.0
+    while (x < IQ1):
+        result += f(x)
+        x += 0.01
+    print("%.1f%% of people have an IQ inferior to %d" % (result, IQ1))
+
+
+def middlePercentage():
+    global IQ1, IQ2
+    if (IQ1 > IQ2 or IQ1 < 0 or IQ2 < 0):
+        raise Exception
+    result = 0.0 ; x = float(IQ1)
+    while (x < IQ2):
+        result += f(x)
+        x += 0.01
+    print("%.1f%% of people have an IQ between %d and %d" % (result, IQ1, IQ2))
+
+
+try:
+    if (len(sys.argv) not in range(3, 6)):
+        raise Exception
+    u = int(sys.argv[1]) ; s = int(sys.argv[2])
+    if (len(sys.argv) == 3):
+        plotDensity()
+    elif (len(sys.argv) == 4):
+        IQ1 = int(sys.argv[3])
+        inferiorPercentage()
+    elif (len(sys.argv) == 5):
+        IQ1 = int(sys.argv[3]) ; IQ2 = int(sys.argv[4])
+        middlePercentage()
+except:
+    print("[ERROR] -> The program could not be executed properly.")
+    exit(84)
