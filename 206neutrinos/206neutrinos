@@ -1,0 +1,99 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2020
+## 206neutrinos_2019
+## File description:
+## 206neutrinos
+##
+
+import sys
+from math import sqrt
+
+######################################################
+# The formulas in comment were the first I
+# emplemented but they caused rounding errors,
+# so I had to split them.
+######################################################
+
+totalValNb = float(0) ; quadratic = float(0)
+startValNb = float(0) ; arithmetic = float(0) ; harmonic = float(0) ; stdDev = float(0) 
+
+
+def updateStandardDev(newVal):
+    global totalValNb, arithmetic, stdDev
+
+    # stdDev = sqrt(((stdDev ** 2) * (totalValNb - 1) + (newVal - arithmetic) ** 2) / totalValNb)
+
+    tmpA = stdDev * stdDev * (totalValNb - 1)
+    tmpB = (newVal - arithmetic) * (newVal - arithmetic)
+    tmpC = (tmpA + tmpB) / totalValNb
+    stdDev = sqrt(tmpC)
+
+
+def updateArithmetic(newVal):
+    global totalValNb, arithmetic
+
+    # arithmetic = (arithmetic * (totalValNb - 1) + newVal) / totalValNb
+
+    tmpA = arithmetic * (totalValNb - 1)
+    tmpB = tmpA + newVal
+    arithmetic = tmpB / totalValNb
+
+
+def updateQuadratic(newVal):
+    global totalValNb, arithmetic, quadratic
+
+    # quadratic = sqrt((((arithmetic ** 2) + (stdDev ** 2)) * (totalValNb - 1)  + (newVal ** 2)) / totalValNb)
+
+    tmpA = stdDev * stdDev * (totalValNb - 1)
+    tmpB = arithmetic * arithmetic * (totalValNb - 1)
+    tmpC = tmpA + tmpB + (newVal * newVal)
+    tmpD = tmpC / totalValNb
+    quadratic = sqrt(tmpD)
+
+
+def updateHarmonic(newVal):
+    global totalValNb, harmonic, arithmetic
+
+    # harmonic = totalValNb / ((totalValNb - 1) * (1 / harmonic) + (1 / newVal))
+    
+    tmpA = 1 / harmonic
+    tmpB = tmpA * (totalValNb - 1)
+    tmpC = tmpB + (1 / newVal)
+    tmpD = tmpC / totalValNb
+    harmonic = (1 / tmpD) # inverse previous result
+
+
+def neutrinos():
+    global startValNb, arithmetic, harmonic, stdDev, totalValNb
+    totalValNb = startValNb
+    while (True):
+        print("Enter next value: ", end='')
+        tmp = input()
+        if (tmp == "END"): break
+        totalValNb += 1
+        updateQuadratic(int(tmp))
+        updateArithmetic(int(tmp))
+        updateStandardDev(int(tmp))
+        updateHarmonic(int(tmp))
+        print("\tNumber of values:\t%d" % totalValNb)
+        print("\tStandard deviation:\t%.2f" % stdDev)
+        print("\tArithmetic mean:\t%.2f" % arithmetic)
+        print("\tRoot mean square:\t%.2f" % quadratic)
+        print("\tHarmonic mean:\t\t%.2f" % harmonic, end='\n\n')
+
+
+try:
+    if (len(sys.argv) != 5):
+        raise Exception
+    for elem in sys.argv[1:]:
+        if (elem[0] == '-'): raise Exception
+    startValNb = int(sys.argv[1])
+    arithmetic = int(sys.argv[2])
+    harmonic = int(sys.argv[3])
+    stdDev = int(sys.argv[4])
+    neutrinos()
+except:
+    print("Could not execute program correctly")
+    exit(84)
