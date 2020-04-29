@@ -1,0 +1,105 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## 207demography
+##
+
+import sys
+import math
+
+countries = []; fileData = []
+years = [n for n in range(1960, 2018)]; data = []
+correlation = 0.0
+
+def rootMeanSquare(A):
+    rms = math.sqrt(sum([(x ** 2) for x in A]) / len(A))
+    return (rms)
+
+def getFirstCoefficient(X, Y):
+    theta = 0.0; tdiv = 0.0
+    XMean = sum(X) / len(X)
+    YMean = sum(Y) / len(Y)
+
+    for i in range(len(X)):
+        theta += (X[i] - XMean) * (Y[i] - YMean)
+        tdiv += (X[i] - XMean) ** 2
+    return (theta / tdiv)
+
+def getSecondCoefficient(X, Y, ac):
+    XMean = sum(X) / len(X)
+    YMean = sum(Y) / len(Y)
+    return (YMean - ac * XMean)
+
+def getRMSD(d, prediction):
+    return (rootMeanSquare([abs(d[i] - prediction[i]) for i in range(len(d))]))
+
+def getFirstFit():
+    global data, years, correlation
+
+    print("\nFit1")
+    aCoeff = getFirstCoefficient(years, data)
+    bCoeff = getSecondCoefficient(years, data, aCoeff) / 1000000
+    print("\tY = %.2f X %c %.2f" % (aCoeff / 1000000, '+' if (bCoeff > 0) else '-', abs(bCoeff)))
+    rms = (getRMSD(data, [((aCoeff / 1000000) * x + bCoeff) * 1000000 for x in years]) / 1000000)
+    print("\tRoot-mean-square deviation: %.2f" % rms)
+    print("\tPopulation in 2050: %.2f" % ((aCoeff / 1000000) * 2050 + bCoeff))
+    correlation = rms
+
+def getSecondFit():
+    global data, years, correlation
+
+    print("Fit2")
+    aCoeff = getFirstCoefficient(data, years)
+    bCoeff = getSecondCoefficient(data, years, aCoeff)
+    print("\tX = %.2f Y %c %.2f" % (aCoeff * 1000000, '+' if (bCoeff > 0) else '-', abs(bCoeff)))
+    rms = (getRMSD(data, [((x - bCoeff) / (aCoeff * 1000000)) * 1000000 for x in years]) / 1000000)
+    print("\tRoot-mean-square deviation: %.2f" % rms)
+    print("\tPopulation in 2050: %.2f" % ((2050 - bCoeff) / (aCoeff * 1000000)))
+    correlation /= rms
+
+
+def getDataTogether():
+    global data, countries
+    tmp = [0 for i in range(2, len(data[0]))]
+
+    print("Country:", end='')
+    for j in range(len(data)):
+        print(" %s" % data[j][0], end='')
+        if (j < len(data) - 1): print(",", end='')
+        for i in range(2, len(data[0])):
+            tmp[i - 2] += int(data[j][i])
+    data = tmp
+
+
+def demography():
+    global correlation
+
+    getDataTogether()
+    getFirstFit()
+    getSecondFit()
+    print("Correlation: %.4f" % correlation)
+
+
+try:
+    if (len(sys.argv) < 2): raise Exception
+
+    # Getting arguments
+    countries = sys.argv[1:]
+
+    # Getting file data
+    with open("207demography_data.csv") as file:
+        for row in [x.strip() for x in file.readlines()]:
+            fileData.append(row.split(';'))
+
+    # Checking arguments && Getting only needed data
+    for cname in countries:
+        if (cname not in [tmp[1] for tmp in fileData]): raise Exception
+        for tmp in fileData:
+            if (cname == tmp[1]): data.append(tmp)
+    # Start program
+    demography()
+except:
+    print("Program could not be executed correctly.")
+    exit(84)
