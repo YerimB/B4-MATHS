@@ -1,2 +1,2 @@
 # B4-MATHS
-Epitech's second year math module.
+Epitech's second year maths module.
