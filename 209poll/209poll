@@ -1,0 +1,33 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2020
+## MATH
+## File description:
+## 209poll
+##
+
+import sys
+from math import sqrt
+
+def poll():
+    print("Program started...")
+
+
+try:
+    if (len(sys.argv) != 4): raise Exception
+    population = int(sys.argv[1])
+    sample = int(sys.argv[2])
+    pc = float(sys.argv[3])
+    for var in [population, sample, pc]:
+        if (var < 0): raise Exception
+    probability = pc / 100
+    variance = (probability * (1 - probability) / sample) * ((population - sample) / (population - 1))
+    print("Population size:\t%d" % population)
+    print("Sample size:\t\t%d" % sample)
+    print("Voting intention:\t%.2f" % pc)
+    print("Variance:\t\t%.6f" % variance)
+    print("95%% confidence interval: [%.2f%%; %.2f%%]" % (pc - 1.96 * sqrt(variance) * 100, pc + 1.96 * sqrt(variance) * 100))
+    print("99%% confidence interval: [%.2f%%; %.2f%%]" % (pc - 2.58 * sqrt(variance) * 100, pc + 2.58 * sqrt(variance) * 100))
+except:
+    print("Program could not be executed correctly.")
+    exit(84)
